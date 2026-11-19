@@ -96,6 +96,24 @@ Detail lives in skills/web2-vuln-classes/SKILL.md, payloads in skills/security-a
 
 - Payloads: skills/security-arsenal/SKILL.md holds XSS, SSRF, SQLi, XXE, path traversal, IDOR and auth bypass, JWT and OAuth, NoSQLi, command injection, SSTI, HTTP smuggling, WAF bypass, WebSocket, MFA bypass, and SAML payloads, plus gf pattern names and framework 1-day quick-wins.
 
+## Web hunt checklist — per-class probes
+
+Adapted 20 Nov 2026 from The-XSS-Rat SecurityTesting HuntingCheckList.md (https://github.com/The-XSS-Rat/SecurityTesting/blob/master/Checklists/HuntingCheckList.md). Only items that fit this setup are adopted: everything below is doable with curl, jq, grep and the live browser. Deliberately NOT adopted: Burp Suite Pro, sqlmap, gobuster/feroxbuster/ffuf, tplmap, nuclei (not installed on this VM — do not install); login brute-force / credential spraying (guardrail); paywall purchases (needs user approval); XSS Hunter accounts (use interactsh detection-only instead); RFI via a self-hosted VPS (no such infra).
+
+- Strategy: probe XSS and SSTI early — insert payloads into every field you see. Build fuzz lists tailored to the target's stack.
+- Recon extras: Google dorks (`site:target.com filetype:js`, `inurl:api`, `"internal use only"`); look for modules disabled by default — extra features are attack surface fewer hunters have seen; JS files for hardcoded endpoints, keys and tokens (verify a key works before treating it as a finding); backup files (`.bak`, `.old`, `.zip`, `.tar.gz`); admin panels (`/admin`, `/administrator`, `/manage`, `/dashboard`, `/cp`).
+- Session lifecycle: create an account for every role and test cross-role access; remove a role and verify the server enforces it immediately; check the session token changes after login (fixation); delete a logged-in account and check the session dies server-side; verify logout invalidates the token server-side, not just in the browser; token in a URL parameter is a leak; tokens must be long, random, not sequential or time-based; look for a hard inactivity timeout.
+- Cookies: HttpOnly, Secure, SameSite Strict/Lax, domain scope (wildcard `.example.com` shares with subdomains), path scope, expiry; cookie value reflected in a URL; try writing a cookie to a subpath.
+- Auth and login: username enumeration (different response for valid vs invalid); password-reset flow — second email parameter redirecting the token, token sent over HTTP, weak/short/predictable token, no forced re-auth after reset; alternative login methods (OAuth, magic links) that may be weaker; JWT — `alg: none`, weak HMAC key, HMAC vs RSA confusion.
+- Injection probes: SQLi in URL params, POST fields, headers (User-Agent, Referer, X-Forwarded-For) and cookies; time-based blind (`' AND SLEEP(5)--`); second-order SQLi (stored data used unsafely later); NoSQL (`{"$gt":""}` in JSON params). SSTI probes: `{{7*7}}`, `}}{{7*7}}`, `${7*7}`, `<%= 7*7 %>`. Command injection: blind `; sleep 5` / `| ping -c 5 <oob-token>`; params that look OS-facing (filenames, IPs, hostnames); chain with `;`, `&&`, `||`, `|`, backticks, `$()`.
+- XSS spots: error pages (404/403/500) reflecting URL params or paths; Referer header reflection; DOM sinks — `document.write()`, `innerHTML`, `eval()`, `location.href`, `setTimeout()` with user input; blind XSS early with an out-of-band token (interactsh, detection-only, no sensitive data in the payload).
+- CSRF: token present on sensitive state-changing requests; static vs rotating token; server accepts a wrong token; server accepts the request with the token parameter removed; SameSite None/absent makes it easier.
+- IDOR: swap numeric IDs, GUIDs and usernames; horizontal then vertical escalation; cross-tenant access; hit API endpoints directly (the UI may hide what the API accepts); indirect refs — file paths, email addresses, order/invoice numbers. UUID IDOR: first find an endpoint that lists or exposes the UUIDs, otherwise the impact stays low.
+- File upload: dangerous extensions (`.php`, `.php5`, `.phtml`, `.asp`, `.aspx`, `.jsp`); MIME spoof (Content-Type `image/jpeg` with dangerous extension); double extension (`shell.php.jpg`); null byte (old PHP); alt extensions (`.php5`, `.phtml`, `.phar`, `.shtml`); polyglot files; SVG with embedded JS/XXE; DOCX/XLSX with XXE in their XML.
+- SSRF: params taking URL/hostname (`url=`, `webhook=`, `redirect=`, `src=`, `dest=`, `feed=`, `load=`); internal ranges (`127.0.0.1`, `192.168.0.1`, cloud metadata `169.254.169.254`); other protocols (`file://`, `dict://`, `gopher://`, `ftp://`); bypasses — URL encoding, IPv6 (`http://[::1]/`), decimal IP (`http://2130706433/`).
+- Open redirect: params (`redirect=`, `url=`, `next=`, `return=`, `returnTo=`, `goto=`, `target=`); bypasses — `@` (`https://target.com@evil.com`), `//evil.com`, subdomain prefix (`https://target.com.evil.com`), URL encoding. Alone it stays low / never-submit — chain it with OAuth code theft for real impact.
+- Chaining: XSS + non-rotating session = persistent account takeover; CSRF email-change + password reset to the new address = account takeover; IDOR + UUID listing endpoint; open redirect + OAuth.
+
 ## Writeup reference
 
 - Real chaining examples live in the read-only reference clone ~/workspace/bugbounty/bug-bounty-writeups/ (alexbieber/Bug_Bounty_writeups, README link list by OWASP Top 10: XSS, CSRF, Clickjacking, LFI, Subdomain Takeover, DoS, Auth Bypass, SQLi, IDOR, 2FA, CORS, SSRF, Race Condition, RCE, Buffer Overflow, Android Pentesting).
@@ -116,6 +134,25 @@ Ask in order. One wrong answer means stop and kill it.
 - Q4 Does it need privileged access an attacker cannot realistically get? Admin can do X is not a bug. Non-admin doing what only admin should do is valid.
 
 - Q5 Is this already known or accepted behavior? Search disclosed reports, issues, changelogs, docs. Documented behavior kills it.
+
+### Rejection lessons — Cantina Liquity #594 / #604 / #607 (20 Nov 2026)
+
+Three findings were disputed, then re-rejected overnight. Fold these into Q2 and Q5 on every draft, and before any dispute (a dispute can be filed only once):
+
+- Read the program's exclusion list first — frontend/apps excluded killed #607; the known-issues exclusion killed #594 and #604.
+- Search every audit report, including appendices and known-issue lists. Audit-documented behaviour is excluded — this killed #604.
+- Search the README, docs and GitHub issues for the mechanism. Publicly documented before submission means not a vulnerability — this killed #594 (V2-gov README, issue #69) and #607 (documented branch-average rate).
+- Attach the PoC file or link inside the finding at submit time. #594's profit figures could not be verified because the PoC files were never attached — and Cantina's Edit form cannot add files afterwards.
+- Name a live funded instance exposed to the path. #604's dispute failed partly because no currently funded target was identified.
+- A sharper exploit of the same state transition is not a new finding. A dispute needs a different root cause, not a refined variant.
+
+### How to run the gate (mandatory procedure)
+
+- Known-issue sweep, recorded in the draft file: before drafting, search audit reports (including appendices), the program's known-issues page, the repo README/docs, disclosed reports and GitHub issues, using the mechanism's keywords. Record each source, the keywords and hits or "no hit" under "Known-issue sweep" in the draft file. A hit kills the draft; an unrecorded sweep means the draft is not ready.
+- Submission package check: the PoC (file, request log or link) must be inside the finding at submit time and confirmed visible before submit. Never submit with "PoC available on request".
+- Live instance check: name the live target and its state as checked. A proof that only works on a local fork with no live instance is held when the impact depends on live state or funds.
+- Dispute readiness checklist: dispute only with quantified proof re-run and passing, PoC attached or linked, live instance named, and a different root cause from the rejected version.
+- Verdict log: after every triager verdict, append it to ~/workspace/bugbounty/triager-verdicts.md (finding, program, verdict, reason, date) and grep that file before drafting in the same mechanism family.
 
 - Q6 Can you prove impact beyond technically possible? XSS must show cookie or session theft, SSRF must return internal data, SQLi must show real table data, IDOR must show another user data. Possibility alone means downgrade.
 

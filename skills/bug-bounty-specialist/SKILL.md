@@ -51,6 +51,26 @@ description: >-
 
 - Challenge your own assumptions on every finding, and check the impact against known issues and past audits before calling it new.
 
+## Rejection lessons — check before every draft (20 Nov 2026)
+
+Three Cantina Liquity findings were disputed, then re-rejected overnight (#594, #604, #607). Every one of these checks must pass before a draft is queued, and before a dispute is filed — a dispute can be filed only once, and a failed dispute is Rejected final.
+
+- Scope exclusions kill first: read the program's exclusion list before hunting, not after drafting. Frontend apps excluded from scope killed #607; the known-issues exclusion killed #594 and #604.
+- Audit-disclosed is dead: search every audit report for the program (Dedaub L3 and others), including appendices and known-issue lists, not just the headline findings. If the behaviour is documented in an audit, the program excludes it — this killed #604.
+- Docs-documented is dead: search the README, docs and GitHub issues for the mechanism. If it was publicly documented before submission (V2-gov README on veto emissions, issue #69), it is not a vulnerability — this killed #594, and the documented branch-average rate killed #607.
+- Attach the PoC in the finding itself: the triager could not verify #594's profit figures because the PoC files were never attached or linked. Attach the PoC file (or gist link) at submit time — Cantina's Edit form cannot add files afterwards.
+- Name a live funded instance: the dispute for #604 failed partly because no currently funded zero-vote bribe exposed to the path was identified. A fork-only proof is not enough when the triager asks where it is live — name the live target, its balance and its state.
+- A sharper exploit is not a new finding: two-pile, multi-target and quantified-profit variants of the same state transition do not change the verdict (#594). A dispute or a new draft needs a DIFFERENT state transition or root cause, not a sharper version of the same one.
+- Make the one dispute count: before disputing, have the full quantified proof, the attached PoC and the live instance ready. Never dispute on a partial fix.
+
+### How to run the gate (mandatory procedure, not just a checklist)
+
+- Known-issue sweep, recorded in the draft file: before drafting, search the audit reports (all of them, including appendices and known-issue lists), the program's known-issues page, the repo README and docs, and the repo's GitHub issues, using the mechanism's keywords (function names, state variables, behaviour). Record in the draft file under "Known-issue sweep": each source searched, the keywords used, and hits or "no hit". A hit kills the draft. An unrecorded sweep means the draft is not ready.
+- Submission package check: the PoC file (or its gist link) must be attached or linked inside the finding at submit time, and the submitter must confirm the attachment is visible before clicking submit. Never submit with "PoC available on request". Cantina's Edit form cannot add files afterwards, so a missing attachment at submit is permanent.
+- Live instance check: name the live target (address, balance, state) and the block or time it was checked, verified read-only on-chain. A fork-only proof with no live instance is held, not submitted, when the finding's impact depends on live funds or live state.
+- Dispute readiness checklist: dispute only when all four are true — quantified proof re-run and passing, PoC attached or linked, live instance named, and a different root cause or state transition from the rejected version. Record the checklist in the draft file before the dispute is filed.
+- Verdict log: after every triager verdict (accept, reject, duplicate, re-reject), append it to ~/workspace/bugbounty/triager-verdicts.md with finding number, program, verdict, reason and date. Grep that file before drafting any finding in the same mechanism family.
+
 ## Prove it on a local fork
 
 - Build the proof of concept on a local fork or localnet only, with the exact commands and output recorded.
