@@ -10,13 +10,13 @@ description: >-
 
 # Web2 Hunt Kit
 
-Adapted from [Agentic-Bug-Hunter](https://github.com/awarexone/Agentic-Bug-Hunter) by AwareXone (MIT). Web and app attack-surface hunting plus finding validation, complementing bug-bounty-specialist. The source repo is a read-only reference; nothing in it is installed or run.
+Adapted from Agentic-Bug-Hunter by AwareXone (MIT). Web and app attack-surface hunting plus finding validation, complementing bug_bounty_specialist. Source repo is a read-only reference at ~/workspace/bugbounty/agentic-bug-hunter/ and nothing in it is installed or run.
 
 ## When to use
 
-- Use this skill for web and app targets, and for any program whose scope is a web app or API.
+- Use this skill for web and app targets such as Cantina Bounty web scope, Rain, Aegis Guard, SideShift, and Meta Muse, and for any program whose scope is a web app or API.
 
-- bug-bounty-specialist is primary for smart-contract hunts. This skill complements it with web attack surface, recon, and validation.
+- bug_bounty_specialist is primary for smart-contract hunts. This skill complements it with web attack surface, recon, and validation.
 
 - Use the 7-Question Gate before writing any draft, for web and smart-contract findings alike.
 
@@ -36,7 +36,7 @@ Non-negotiable. They override the source repo defaults.
 
 - Never run an end-to-end autopilot loop. No credential spraying.
 
-- Do not use HackerOne, Bugcrowd, Intigriti, or Immunefi templates.
+- Do not use HackerOne, Bugcrowd, Intigriti, or Immunefi templates. Immunefi is disabled for us.
 
 - Treat every scanner hit or AI suggestion as a hypothesis until one reproducible request proves it.
 
@@ -80,7 +80,7 @@ Non-negotiable. They override the source repo defaults.
 
 ## Vuln class index
 
-Detail lives in the upstream repo's `web2-vuln-classes` skill, payloads in its `security-arsenal` skill (see Source references).
+Detail lives in skills/web2-vuln-classes/SKILL.md, payloads in skills/security-arsenal/SKILL.md.
 
 - Auth and access: 2 Broken auth, 8 OAuth and OIDC, 13 Account takeover, 19 MFA and 2FA bypass, 20 SAML and SSO. Compare sibling functions.
 
@@ -94,11 +94,11 @@ Detail lives in the upstream repo's `web2-vuln-classes` skill, payloads in its `
 
 - Infrastructure: 15 Subdomain takeover, 25 Dependency confusion. Dangling CNAME and private package names claimed in public registries.
 
-- Payloads: the upstream `security-arsenal` skill holds XSS, SSRF, SQLi, XXE, path traversal, IDOR and auth bypass, JWT and OAuth, NoSQLi, command injection, SSTI, HTTP smuggling, WAF bypass, WebSocket, MFA bypass, and SAML payloads, plus gf pattern names and framework 1-day quick-wins.
+- Payloads: skills/security-arsenal/SKILL.md holds XSS, SSRF, SQLi, XXE, path traversal, IDOR and auth bypass, JWT and OAuth, NoSQLi, command injection, SSTI, HTTP smuggling, WAF bypass, WebSocket, MFA bypass, and SAML payloads, plus gf pattern names and framework 1-day quick-wins.
 
 ## Writeup reference
 
-- Real chaining examples live in [alexbieber/Bug_Bounty_writeups](https://github.com/alexbieber/Bug_Bounty_writeups) (README link list by OWASP Top 10: XSS, CSRF, Clickjacking, LFI, Subdomain Takeover, DoS, Auth Bypass, SQLi, IDOR, 2FA, CORS, SSRF, Race Condition, RCE, Buffer Overflow, Android Pentesting).
+- Real chaining examples live in the read-only reference clone ~/workspace/bugbounty/bug-bounty-writeups/ (alexbieber/Bug_Bounty_writeups, README link list by OWASP Top 10: XSS, CSRF, Clickjacking, LFI, Subdomain Takeover, DoS, Auth Bypass, SQLi, IDOR, 2FA, CORS, SSRF, Race Condition, RCE, Buffer Overflow, Android Pentesting).
 - Use it when a vuln class needs a real chaining idea: self-XSS to stored XSS to account takeover, XSS to RCE, cache poisoning to stored XSS, SSRF escalation.
 - Rule: learn the technique and the chain, NEVER copy someone else's PoC. Every finding still needs its own reproducible proof on the target and must pass the 7-Question Gate.
 - Links are external (Medium, blogs, HackerOne); some may be dead or paywalled — treat the README as an index, not as the content itself.
@@ -135,13 +135,25 @@ All four must pass before any draft.
 
 - Gate 3 Draft quality in 10 minutes. The title states bug class, endpoint, actor, and impact. Steps are copy-pasteable requests. Evidence shows actual impact. Severity matches CVSS and the program definitions. Remediation is one or two concrete sentences. Never write could potentially.
 
+### Draft completeness standard
+
+Same bar as bug_bounty_specialist. Never submit a draft missing any section; complete it first, or fix it by Edit when it is already submitted.
+
+- Every Description has all seven sections, in this order: Summary, Affected Endpoints, Vulnerability Details, Impact, Reproduction, Adversarial Self-Check, Recommendation.
+- Reproduction is the most important section: numbered steps a stranger can follow from zero — URL, parameters, HTTP method, account/role, full payload or request, browser/version — plus the exact commands and the expected output.
+- Reproduction and PoC are ONE section — do not split them. The Reproduction section IS the proof of concept: the steps, the payload, and the observed result, all in one place.
+- Draft format follows the program's own rules: read the program page first and match what it asks for. Do not force another program's format onto a new program — for example, Mirage drafts use a separate "Proof of concept" section, but that is Mirage's format, not a universal one.
+- Adversarial Self-Check answers every plausible objection ("just phishing", "documented behavior", "duplicate of a known report") with a rebuttal. An unanswered objection is a missing section.
+- Target roughly 1,300 words for the Description, never over the program limit. Title 128 characters or fewer, Risk 512 characters or fewer.
+- Lesson 19 Nov 2026 (Draft J, Cantina #2046): submitted thin at 932 words with 5 sections and no Reproduction section — it had to be expanded by Edit to 1,505 words and 7 sections. Check completeness BEFORE submit, not after.
+
 ### Never submit list
 
-Submitting these destroys the validity ratio: missing security headers, missing SPF DKIM DMARC, GraphQL introspection alone, banner disclosure without a working CVE exploit, clickjacking on non-sensitive pages, tabnabbing, CSV injection without code execution, CORS wildcard without credential exfil proof, logout CSRF, self-XSS, open redirect alone, SSRF DNS callback only, host header injection alone, rate limit on non-critical forms, session issues. Full list lives in the upstream `triage-validation` skill.
+Submitting these destroys the validity ratio: missing security headers, missing SPF DKIM DMARC, GraphQL introspection alone, banner disclosure without a working CVE exploit, clickjacking on non-sensitive pages, tabnabbing, CSV injection without code execution, CORS wildcard without credential exfil proof, logout CSRF, self-XSS, open redirect alone, SSRF DNS callback only, host header injection alone, rate limit on non-critical forms, session issues. Full list lives in skills/triage-validation/SKILL.md.
 
 ### Conditionally valid only with a chain
 
-Prove the chain end to end before drafting. Open redirect plus OAuth redirect_uri theft becomes account takeover. CORS wildcard plus credentialed PII exfil becomes High. CSRF plus a sensitive action becomes High. Rate limit bypass plus OTP brute force becomes Medium or High. SSRF DNS-only plus internal data becomes Medium. Host header injection plus password reset poisoning becomes High. Self-XSS plus CSRF trigger becomes Medium. Subdomain takeover plus OAuth redirect_uri becomes Critical. Full table lives in the upstream `triage-validation` skill.
+Prove the chain end to end before drafting. Open redirect plus OAuth redirect_uri theft becomes account takeover. CORS wildcard plus credentialed PII exfil becomes High. CSRF plus a sensitive action becomes High. Rate limit bypass plus OTP brute force becomes Medium or High. SSRF DNS-only plus internal data becomes Medium. Host header injection plus password reset poisoning becomes High. Self-XSS plus CSRF trigger becomes Medium. Subdomain takeover plus OAuth redirect_uri becomes Critical. Full table lives in skills/triage-validation/SKILL.md.
 
 ### Kill fast rules
 
@@ -159,7 +171,7 @@ Prove the chain end to end before drafting. Open redirect plus OAuth redirect_ur
 
 ## Web3 cross-check
 
-Cross-check only for smart-contract hunts. bug-bounty-specialist stays primary.
+Cross-check only for smart-contract hunts. bug_bounty_specialist stays primary.
 
 - 1 Accounting desync. One path updates one of two synced state variables, forgetting the other.
 
@@ -183,28 +195,30 @@ Cross-check only for smart-contract hunts. bug-bounty-specialist stays primary.
 
 - The one rule. Read all sibling functions. If vote() has a modifier, check poke(), reset(), and harvest().
 
-- Foundry PoC template. A forge-std Test with setUp forking mainnet at a pinned block, attacker and victim from makeAddr, deal for funding, vm.startPrank, exploit steps, and an assertGt on the attacker balance. Run with forge test --match-test test_exploit -vvvv on a local fork. Detail lives in the upstream `web3-audit` skill.
+- Foundry PoC template. A forge-std Test with setUp forking mainnet at a pinned block, attacker and victim from makeAddr, deal for funding, vm.startPrank, exploit steps, and an assertGt on the attacker balance. Run with forge test --match-test test_exploit -vvvv on a local fork. Detail lives in skills/web3-audit/SKILL.md.
 
-## Tool availability
+## Tool availability on this VM
 
-- If your environment lacks the usual recon tools (subfinder, httpx, nuclei, katana, ffuf, nmap, dalfox, dnsx, naabu, gau, arjun), do not install them blindly. Adapt the recon chain to curl, jq, grep, the live browser, and crt.sh.
+- Checked 18 Nov 2026 with command -v: subfinder, httpx, nuclei, katana, ffuf, nmap, dalfox, dnsx, naabu, gau, arjun are ALL missing on this VM.
+
+- Do not install missing tools. Adapt the recon chain to curl, jq, grep, the live browser, and crt.sh.
 
 - If a tool is ever installed later, re-verify it with command -v before writing it into a plan.
 
 ## Source references
 
-- Upstream repo, read-only reference: https://github.com/awarexone/Agentic-Bug-Hunter
+- Repo reference, read-only: ~/workspace/bugbounty/agentic-bug-hunter/
 
-- Methodology: https://github.com/awarexone/Agentic-Bug-Hunter/tree/main/skills/bb-methodology
+- Methodology: skills/bb-methodology/SKILL.md
 
-- Recon chain: https://github.com/awarexone/Agentic-Bug-Hunter/tree/main/skills/web2-recon
+- Recon chain: skills/web2-recon/SKILL.md
 
-- Vuln classes and bypass tables: https://github.com/awarexone/Agentic-Bug-Hunter/tree/main/skills/web2-vuln-classes
+- Vuln classes and bypass tables: skills/web2-vuln-classes/SKILL.md
 
-- Payloads: https://github.com/awarexone/Agentic-Bug-Hunter/tree/main/skills/security-arsenal
+- Payloads: skills/security-arsenal/SKILL.md
 
-- Validation gate: https://github.com/awarexone/Agentic-Bug-Hunter/tree/main/skills/triage-validation
+- Validation gate: skills/triage-validation/SKILL.md
 
-- Smart-contract classes and PoC: https://github.com/awarexone/Agentic-Bug-Hunter/tree/main/skills/web3-audit
+- Smart-contract classes and PoC: skills/web3-audit/SKILL.md
 
-- Not used: the upstream `credential-attack`, `meme-coin-audit`, and `report-writing` skills, the bughunter autopilot loop, and the MCP server.
+- Not used: skills/credential-attack, skills/meme-coin-audit, skills/report-writing, the bughunter autopilot loop, and the MCP server.

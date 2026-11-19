@@ -129,6 +129,23 @@ description: >-
 
 - Keep a draft quiet until it is finished and saved, and report only the finished result with its category and tier.
 
+## Draft completeness check — run before every submit
+
+A thin draft costs triage trust. Never submit a draft missing any item below; complete it first, or fix it by Edit when it is already submitted.
+
+- Every Description has all seven sections, in this order: Summary, Affected Contracts, Vulnerability Details, Impact, Reproduction, Adversarial Self-Check, Recommendation.
+- Summary: two to three sentences — flaw, location, impact.
+- Affected Contracts: exact contract, function and parameters, plus the entrypoint and any canonical addresses.
+- Vulnerability Details: root cause plus the numbered attack sequence, and how it differs from sibling findings.
+- Impact: quantified (funds, users, state) plus honest bounds — what the attack cannot do, and why Likelihood is what it is.
+- Reproduction: numbered deterministic steps a stranger can follow from zero, with exact commands and the expected output (test names, pass counts, verification date). A PoC file name alone is not a reproduction section.
+- Reproduction and PoC are ONE section — do not split them. The Reproduction section IS the proof of concept: the steps, the commands, the test file, and the observed result, all in one place.
+- Draft format follows the program's own rules: read the program page first and match what it asks for (reproduction steps, impact, proof of concept, or its own form fields). Do not force another program's format onto a new program — for example, Mirage drafts use a separate "Proof of concept" section, but that is Mirage's format, not a universal one.
+- Adversarial Self-Check: every plausible objection with a rebuttal — "the owner signed it", "the audit already noted this", "duplicate of sibling X", "too contrived". An unanswered objection is a missing section.
+- Recommendation: family-level fix plus the narrow fix, and how to verify the fix (re-run which PoC tests).
+- Target roughly 1,300 words for the Description (never over the program limit — Cantina counts 2,000 words, code blocks excluded). Title 128 characters or fewer, Risk 512 characters or fewer.
+- Lesson 19 Nov 2026 (Draft J, Cantina #2046): submitted at 932 words with 5 sections, no Adversarial Self-Check, no Affected Contracts, no Reproduction section — it had to be expanded by Edit to 1,505 words and 7 sections. Check completeness BEFORE submit, not after.
+
 ## Verify an email resend against Sent before sending
 
 - Read the original message verbatim from the Sent folder before you resend any bounty report by email, and do not trust a workspace file copy on its own for the resend text.
@@ -147,7 +164,7 @@ description: >-
 
 - Treat the original Sent message as the authority over the file copy for an email resend, because a file copy can hold a wrong extraction while Sent holds what was actually sent.
 
-- Ask the user to approve the exact text before any submission on a route that stays user-action-only, since submission on those routes stays a user action from the user account.
+- Ask the user to approve the exact text before any submission on a route that stays user-action-only, such as Immunefi, since submission on those routes stays a user action from the user account.
 
 ## Keep hunting after nihil
 
@@ -159,11 +176,21 @@ description: >-
 
 - Report only proven drafts to the user, and stay silent while the hunt continues.
 
-## Find more tools when needed
+## Use the same discipline for make.fun entries
 
-- Use your agent's connector and skill search to find related tools and skills for the task at hand.
+- Run the fresh kit's `makefun check` on the repo and the transcript bundle before the user submits anything, and fix every failing check except a known local only artifact.
 
-- If nothing fits, look on the web for a maintained API or MCP server and set it up with a custom connector, or build a custom connector.
+- Reproduce the grading run locally before submitting, including the grading container conditions such as a C locale, so an encoding or environment crash shows up before the server sees it.
+
+- Verify the transcript bundle carries usage rows and at least two messages that wrote or edited the entrypoint, and verify the submitted GitHub commit holds the same entrypoint content as the bundle.
+
+- Treat a rejected entry like a failed validation gate, read the exact failing check, fix the root cause, and re-verify locally before the next submit.
+
+## Available connectors
+
+- Use `muse.connector_search` to find other connectors and `muse.skill_search` to find related skills.
+
+- If nothing here fits, look on the web for a maintained API or MCP server and set it up with [Custom Connectors and MCPs](/opt/muse/skills/custom-connector-setup/SKILL.md), or build a custom connector.
 
 ## Alternatives for better results
 
