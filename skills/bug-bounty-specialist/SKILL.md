@@ -196,6 +196,15 @@ A thin draft costs triage trust. Never submit a draft missing any item below; co
 
 - Report only proven drafts to the user, and stay silent while the hunt continues.
 
+## Rotation rules — keep the queue short (20 Nov 2026)
+
+- Prioritise by payout and deadline: Mirage, Liquity (new round 25 Nov), Safe first; small-payout programs wait at the back of the queue.
+- Time-box each pass so the rotation cycles fast; carry unfinished leads to the next pass instead of letting one pass run for hours.
+- Parallel cap: ~2 heavy hunts at once, 3 at most when the VM has headroom — never 4 (the VM has 1.5 CPUs; 4 heavy workers slow everything down).
+- Immunefi re-hunt queue PAUSED since 20 Nov 2026 (no Immunefi account exists, so even a proven draft cannot be submitted): Enzyme Onyx, Hashflow, Derive, Pareto, Origin, Alchemix, Twyne, GMTrade, Utix, Spark, Raydium, Marinade, Instadapp, Hermetica, Orca, Pact. Keep each program's trigger recorded; resume only on the user's order once an account exists.
+- Xingchi reader CLOSED entirely 20 Nov 2026 (all 10 accounts dead, 401 USER_INACTIVE; driver stopped; monitor removed; provider config removed). Hunt manually only; never ask for another key; never create accounts. A reader may be bought only after a draft has actually been PAID.
+- Gemini 4 Hydrogen benchmarked 0/4 on 20 Nov 2026 (all 4 key bugs missed, slow, thinking-heavy) — do not switch the reader to Hydrogen. Astra 1.5/4 remains the best reader tested so far.
+
 ## Use the same discipline for make.fun entries
 
 - Run the fresh kit's `makefun check` on the repo and the transcript bundle before the user submits anything, and fix every failing check except a known local only artifact.
